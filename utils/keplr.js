@@ -172,10 +172,10 @@ module.exports.getBalance = async (address) => {
   );
   const sender_client = await SigningCosmWasmClient.connectWithSigner(
     rpcEndpoint,
-    sender_wallet,
-    {
-      gasPrice: GasPrice.fromString("0.025ujunox"),
-    }
+    sender_wallet
+    // {
+    //   gasPrice: GasPrice.fromString("0.025ujunox"),
+    // }
   );
   console.log("sender client", sender_client);
   return sender_client.getBalance(address, "ujunox");
