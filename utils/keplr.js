@@ -164,19 +164,22 @@ module.exports.getToken = async (wallet, amount) => {
 };
 
 module.exports.getBalance = async (address) => {
-  const sender_wallet = await DirectSecp256k1HdWallet.fromMnemonic(
-    this.ADMIN.mnemonic,
-    {
-      prefix: "juno",
-    }
-  );
-  const sender_client = await SigningCosmWasmClient.connectWithSigner(
-    rpcEndpoint,
-    sender_wallet
-    // {
-    //   gasPrice: GasPrice.fromString("0.025ujunox"),
-    // }
-  );
-  console.log("sender client", sender_client);
-  return sender_client.getBalance(address, "ujunox");
+  try {
+    const sender_wallet = await DirectSecp256k1HdWallet.fromMnemonic(
+      this.ADMIN.mnemonic,
+      {
+        prefix: "juno",
+      }
+    );
+    const sender_client = await SigningCosmWasmClient.connectWithSigner(
+      rpcEndpoint,
+      sender_wallet,
+      {
+        gasPrice: GasPrice.fromString("0.025ujunox"),
+      }
+    );
+    return sender_client.getBalance(address, "ujunox");
+  } catch (e) {
+    console.log("get balance error", e);
+  }
 };
