@@ -93,10 +93,14 @@ router.get("/get-user", [], (req, res, next) => {
   db.query(
     "SELECT first_name, last_name, email, address, hash, isWhiteListed, whiteListedBy, isAdmin, custom_wallet_address FROM users",
     function (error, results) {
-      if (error) throw error;
+      if (error) {
+        console.log("get user error", error);
+        throw error;
+      }
 
       let data = [],
-        queries = [];
+        queries = [],
+        dataWithoutBalance = [];
       results.forEach((result) => {
         if (caller === ADMIN.hash || result.hash !== ADMIN.hash) {
           data.push({
@@ -104,20 +108,26 @@ router.get("/get-user", [], (req, res, next) => {
             isWhiteListed: !!result.isWhiteListed,
             whiteListBy: result.whiteListedBy,
           });
-          queries.push(getBalance(result.custom_wallet_address));
+          queries.push(
+            getBalance(result.custom_wallet_address || result.address)
+          );
         }
       });
-      Promise.all(queries).then((queryResults) => {
-        console.log("queryResults", queryResults);
-        queryResults.forEach((queryResult, index) => {
-          data[index].balance = +queryResult.amount / 1e6;
+      Promise.all(queries)
+        .then((queryResults) => {
+          console.log("queryResults", queryResults);
+          queryResults.forEach((queryResult, index) => {
+            data[index].balance = +queryResult.amount / 1e6;
+          });
+          return res.status(200).send({
+            error: false,
+            data,
+            message: "Fetch Successfully.",
+          });
+        })
+        .catch((e) => {
+          console.log("get user error", e);
         });
-        return res.status(200).send({
-          error: false,
-          data,
-          message: "Fetch Successfully.",
-        });
-      });
 
       // return res.send({
       //   error: false,
