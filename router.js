@@ -93,7 +93,10 @@ router.get("/get-user", [], (req, res, next) => {
   db.query(
     "SELECT first_name, last_name, email, address, hash, isWhiteListed, whiteListedBy, isAdmin, custom_wallet_address FROM users",
     function (error, results) {
-      if (error) throw error;
+      if (error) {
+        console.log("get user error", error);
+        throw error;
+      }
 
       let data = [],
         queries = [];
