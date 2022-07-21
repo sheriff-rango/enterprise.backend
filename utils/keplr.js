@@ -164,6 +164,7 @@ module.exports.getToken = async (wallet, amount) => {
 };
 
 module.exports.getBalance = async (address) => {
+  console.log("get balance", address);
   const sender_wallet = await DirectSecp256k1HdWallet.fromMnemonic(
     this.ADMIN.mnemonic,
     {
