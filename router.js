@@ -110,17 +110,21 @@ router.get("/get-user", [], (req, res, next) => {
           queries.push(getBalance(result.custom_wallet_address));
         }
       });
-      Promise.all(queries).then((queryResults) => {
-        console.log("queryResults", queryResults);
-        queryResults.forEach((queryResult, index) => {
-          data[index].balance = +queryResult.amount / 1e6;
+      Promise.all(queries)
+        .then((queryResults) => {
+          console.log("queryResults", queryResults);
+          queryResults.forEach((queryResult, index) => {
+            data[index].balance = +queryResult.amount / 1e6;
+          });
+          return res.status(200).send({
+            error: false,
+            data,
+            message: "Fetch Successfully.",
+          });
+        })
+        .catch((e) => {
+          console.log("get user error", e);
         });
-        return res.status(200).send({
-          error: false,
-          data,
-          message: "Fetch Successfully.",
-        });
-      });
 
       // return res.send({
       //   error: false,
