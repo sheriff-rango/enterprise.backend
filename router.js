@@ -99,23 +99,18 @@ router.get("/get-user", [], (req, res, next) => {
       }
 
       let data = [],
-        queries = [], dataWithoutBalance = [];
+        queries = [],
+        dataWithoutBalance = [];
       results.forEach((result) => {
         if (caller === ADMIN.hash || result.hash !== ADMIN.hash) {
-          if (result.custom_wallet_address) {
-            data.push({
-              ...result,
-              isWhiteListed: !!result.isWhiteListed,
-              whiteListBy: result.whiteListedBy,
-            });
-          queries.push(getBalance(result.custom_wallet_address));
-          } else {
-            dataWithoutBalance.push({
-              ...result,
-              isWhiteListed: !!result.isWhiteListed,
-              whiteListBy: result.whiteListedBy,
-            });
-          }
+          data.push({
+            ...result,
+            isWhiteListed: !!result.isWhiteListed,
+            whiteListBy: result.whiteListedBy,
+          });
+          queries.push(
+            getBalance(result.custom_wallet_address || result.address)
+          );
         }
       });
       Promise.all(queries)
@@ -126,7 +121,7 @@ router.get("/get-user", [], (req, res, next) => {
           });
           return res.status(200).send({
             error: false,
-            data.concat(dataWithoutBalance),
+            data,
             message: "Fetch Successfully.",
           });
         })
