@@ -170,6 +170,7 @@ module.exports.getBalance = async (address) => {
       prefix: "juno",
     }
   );
+  console.log("sender wallet", sender_wallet);
   const sender_client = await SigningCosmWasmClient.connectWithSigner(
     rpcEndpoint,
     sender_wallet,
